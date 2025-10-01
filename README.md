@@ -3,6 +3,59 @@
 
 ---
 
+## 🔝 Resumo Prioritário
+
+### Integrantes
+Gabriel Marques de Lima Sousa (RM554889)  
+Leonardo Menezes Parpinelli Ribas (RM557908)  
+Leonardo Matheus Teixeira (RM556629)
+
+### Justificativa da Arquitetura
+Aplicamos arquitetura em camadas para separar responsabilidades e facilitar testes e evolução:
+- Domain: Entidades ricas + regras de negócio essenciais.
+- Infrastructure: Persistência (EF Core / Migrations) isolada atrás de repositórios/DbContext.
+- Application: DTOs, validações (FluentValidation), serviços orquestrando regras e mapeamentos (AutoMapper) sem depender de detalhes de infra.
+- Api: Controllers enxutos, versionamento, ProblemDetails, filtros, documentação (Swagger) e middlewares transversais.
+- Tests: Garantem integridade de serviços e validações sem acoplamento a infraestrutura real.
+Benefícios: baixa acoplamento, alta coesão, testabilidade, possibilidade futura de trocar persistência (ex: outro banco) ou expor nova camada (ex: gRPC) sem reescrever domínio.
+
+### Instruções de Execução Rápida
+Pré-requisitos: .NET 9 SDK, SQL Server disponível e string de conexão configurada.
+```bash
+dotnet restore
+dotnet build mottag-api.sln
+dotnet run --project src/App.Api
+```
+Acessar: `/swagger` (docs) e `/health` (sanidade). Para rodar com user-secrets configure a connection string (ver bloco de Configuração mais abaixo).
+
+### Exemplos de Uso de Endpoints
+Base URL: `/api/v1`
+- Criar Pátio: `POST /api/v1/patios`  
+   Body: `{ "nome":"Pátio Central","cidade":"São Paulo","estado":"SP","pais":"BR","areaM2":1500 }`
+- Criar Moto: `POST /api/v1/motos`  
+   Body: `{ "patioId":"<GUID_PATIO>","placa":"ABC1D23","modelo":"Yamaha MT-07","status":0 }`
+- Criar Tag: `POST /api/v1/tags`  
+   Body: `{ "motoId":"<GUID_MOTO>","serial":"TAG-0001","tipo":0,"bateriaPct":100,"lastSeenAt":null }`
+- Listar Motos filtrando: `GET /api/v1/motos?patioId=<GUID_PATIO>&status=0&page=1&pageSize=10`
+- Atualizar Moto: `PUT /api/v1/motos/{id}`
+- Excluir Tag: `DELETE /api/v1/tags/{id}`
+Resposta paginada exemplo:
+```json
+{ "items":[], "total":0, "page":1, "pageSize":10, "links": {"self":"...","next":null,"prev":null} }
+```
+Erro de conflito exemplo:
+```json
+{ "title":"Conflict", "status":409, "detail":"Serial já cadastrado" }
+```
+
+### Comando para Rodar os Testes
+```bash
+dotnet test tests/App.Tests/App.Tests.csproj -v minimal
+```
+
+---
+As seções abaixo detalham profundamente cada aspecto (configuração, deploy, troubleshooting, roadmap, etc.).
+
 ## 1. Visão Geral
 Camadas: Domain → Infrastructure (EF Core) → Application (DTOs/Services/Validation/Mapping) → Api (Controllers/Middlewares/Swagger) → Tests.
 
@@ -155,11 +208,6 @@ dotnet test tests/App.Tests/App.Tests.csproj -v minimal
 - Application Insights + logging estruturado (Serilog)
 - Managed Identity para SQL
 - Versionamento adicional de API (v2) / caching
-
-## 15. Equipe
-Gabriel Marques de Lima Sousa (RM554889)  
-Leonardo Menezes Parpinelli Ribas (RM557908)  
-Leonardo Matheus Teixeira (RM556629)
 
 ---
 Se precisar de uma coleção Postman ou pipeline CI/CD, abra uma issue ou solicite. Boa utilização! 💡

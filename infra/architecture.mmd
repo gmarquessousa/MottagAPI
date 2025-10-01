@@ -1,0 +1,39 @@
+%% Mermaid diagram of proposed Azure infrastructure
+%% Render with Mermaid support (e.g., in VS Code with extension)
+flowchart LR
+    subgraph Client[Client / Dev]
+        A[Browser / API Client]
+    end
+
+    A --> GW[App Service (ASP.NET Core API)]
+
+    subgraph Observability
+        AI[(Application Insights)]
+        LA[(Log Analytics Workspace)]
+    end
+
+    subgraph Security
+        KV[(Key Vault)]
+        ID[Managed Identity]
+    end
+
+    subgraph Data
+        SQL[(Azure SQL Database)]
+    end
+
+    GW --> SQL
+    GW --> KV
+    GW --> AI
+    AI --> LA
+    ID -.-> SQL
+    ID -.-> KV
+
+    classDef compute fill:#2563eb,stroke:#0f172a,stroke-width:1,color:#fff
+    classDef data fill:#059669,stroke:#064e3b,stroke-width:1,color:#fff
+    classDef sec fill:#7c3aed,stroke:#4c1d95,stroke-width:1,color:#fff
+    classDef obs fill:#f59e0b,stroke:#92400e,stroke-width:1,color:#fff
+
+    class GW compute
+    class SQL data
+    class KV,ID sec
+    class AI,LA obs

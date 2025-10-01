@@ -78,15 +78,6 @@ Obrigatória:
 | Chave | Onde | Uso |
 |-------|------|-----|
 | ConnectionStrings:DefaultConnection | App Settings ou aba Connection Strings | EF Core | 
-
-Opcionais:
-| Chave | Finalidade |
-|-------|-----------|
-| ASPNETCORE_ENVIRONMENT | Normalmente Production em Azure |
-| Swagger:AccessKey | Protege /swagger exigindo header X-Swagger-Key |
-| Logging:LogLevel:Default | Ajustar verbosidade |
-| Logging:LogLevel:Microsoft.AspNetCore | Reduz ruído |
-
 Local (user-secrets):
 ```bash
 dotnet user-secrets init --project src/App.Api
@@ -110,7 +101,7 @@ dotnet ef database update -p src/App.Infrastructure -s src.App.Api
 ```
 Migração atual: `Initial`.
 
-## 6. Deploy (Passo a Passo Correto)
+## 6. Deploy 
 1. Publicar:
    ```bash
    dotnet publish src/App.Api/App.Api.csproj -c Release -o publish

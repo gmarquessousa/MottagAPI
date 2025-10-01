@@ -7,8 +7,13 @@ namespace App.Api.Controllers;
 [Route("api/v1/motos")]
 public class MotosController : ControllerBase
 {
-    private readonly IMotoService _service;private readonly ILinkBuilder _links;
-    public MotosController(IMotoService service, ILinkBuilder links){_service=service;_links=links;}
+    private readonly IMotoService _service;
+    private readonly ILinkBuilder _links;
+    public MotosController(IMotoService service, ILinkBuilder links)
+    {
+        _service=service;
+        _links=links;
+    }
 
     /// <summary>Lista motos com filtros opcionais.</summary>
     /// <remarks>Exemplo: GET /api/v1/motos?page=1&amp;pageSize=10&amp;placa=ABC1234</remarks>

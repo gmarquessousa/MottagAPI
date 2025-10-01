@@ -199,3 +199,40 @@ dotnet test tests/App.Tests/App.Tests.csproj -v minimal
 | 409 | Duplicidade (placa / serial) | Alterar valor |
 | 412 | Concurrency / rowVersion | Recarregar e reenviar |
 | 500 inicial | Connection string inválida | Ajustar config e restart |
+
+## 14. Infra & Banco de Dados
+Infraestrutura lógica:
+- Persistência: EF Core + SQL Server. Contexto `AppDbContext` expõe `Patios`, `Motos`, `Tags`.
+- Registro: `AddAppPersistence` configura DbContext com connection string `DefaultConnection` e registra `IRepository<>` genérico (`EfRepository`).
+- Migrations: executadas no startup via `db.Database.Migrate()` (migração atual: `Initial`).
+
+Modelo relacional (tabelas):
+- Patios (Id PK, Nome, Cidade, Estado, Pais, AreaM2)
+- Motos (Id PK, PatioId FK restrito, Placa UNIQUE, Modelo, Status com constraint de valores)
+- Tags (Id PK, MotoId FK opcional UNIQUE filtrado, Serial UNIQUE, Tipo, BateriaPct, LastSeenAt)
+
+Relacionamentos e regras:
+- 1 Patio -> N Motos (`Restrict` ao deletar para evitar cascatas múltiplas)
+- 1 Moto -> 0..1 Tag (FK em Tag com `SetNull` no delete)
+- Unique indexes: Placa (Moto), Serial (Tag), MotoId (Tag) com filtro `[MotoId] IS NOT NULL`.
+- Check constraints: `CK_Moto_Status` (Status ∈ {0,1,2,3}); `CK_Tag_BateriaPct` (0–100) via config.
+
+Camada de acesso:
+- Repositório genérico encapsula CRUD básico; serviços de Application layer orquestram validação e regras antes de persistir.
+
+Considerações de evolução:
+- Possível adicionar soft delete (coluna IsDeleted) sem quebrar desenho atual.
+- Para escala de leitura: adicionar caching (ex: Redis) na camada Application sem tocar domínio.
+- Para auditoria: incluir CreatedAt/UpdatedAt via interceptors EF.
+
+Desempenho & Índices:
+- Índices nas colunas de busca principais: Nome (Patio), Placa (Moto), Serial (Tag), PatioId+Status (Moto), MotoId filtrado (Tag).
+- Paginação feita via query com filtros opcionais (nenhuma projeção pesada no DbContext).
+
+Integridade:
+- Delete restrito evita remoção acidental em cascata de Motos ao remover Pátio.
+- SetNull em Tag preserva histórico de Tag mesmo sem Moto.
+
+Segurança de conexão:
+- Recomenda-se usar Azure SQL com Encrypt=True e Managed Identity futura (atual: string com credenciais).
+

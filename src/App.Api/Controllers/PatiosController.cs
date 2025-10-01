@@ -17,7 +17,6 @@ public class PatiosController : ControllerBase
     public async Task<ActionResult<PagedResultDto<PatioReadDto>>> List([FromQuery] string? search,[FromQuery] string? sortBy,[FromQuery] string? sortDir,[FromQuery] int page=1,[FromQuery] int pageSize=10, CancellationToken ct=default)
     {
         var result = await _service.ListAsync(search, sortBy, sortDir, page, pageSize, ct);
-        // Wrap em ResourceDto? Para coleção já retornamos PagedResultDto com links
         var withLinks = _links.WithCollectionLinks("patios", result, (p,ps)=>Url.ActionLink(nameof(List), values:new { page=p, pageSize=ps, search, sortBy, sortDir})!);
         return Ok(withLinks);
     }
@@ -56,7 +55,6 @@ public class PatiosController : ControllerBase
     [ProducesResponseType(412)]
     public async Task<ActionResult<ResourceDto<PatioReadDto>>> Update(Guid id, [FromBody] UpdatePatioDto body, CancellationToken ct=default)
     {
-        // If-Match: cliente envia body.RowVersion já; ETag via header é opcional aqui pois RowVersion do DTO usado.
         var dto = await _service.UpdateAsync(id, body, ct);
         var resource = new ResourceDto<PatioReadDto>{ Data = dto };
         _links.WithItemLinks("patios", id, resource);
@@ -68,7 +66,7 @@ public class PatiosController : ControllerBase
     [ProducesResponseType(204)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct=default)
     {
-        await _service.DeleteAsync(id, string.Empty, ct); // ignorando token de concorrência
+        await _service.DeleteAsync(id, string.Empty, ct);
         return NoContent();
     }
 }

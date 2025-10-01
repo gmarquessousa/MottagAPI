@@ -7,8 +7,13 @@ namespace App.Api.Controllers;
 [Route("api/v1/tags")]
 public class TagsController : ControllerBase
 {
-    private readonly ITagService _service;private readonly ILinkBuilder _links;
-    public TagsController(ITagService service, ILinkBuilder links){_service=service;_links=links;}
+    private readonly ITagService _service;
+    private readonly ILinkBuilder _links;
+    public TagsController(ITagService service, ILinkBuilder links)
+    {
+        _service=service;
+        _links=links;
+    }
 
     /// <summary>Lista tags com filtro opcional por serial.</summary>
     /// <remarks>Exemplo: GET /api/v1/tags?page=1&amp;pageSize=10&amp;serial=XYZ</remarks>

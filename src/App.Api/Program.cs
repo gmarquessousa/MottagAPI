@@ -5,11 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Swashbuckle.AspNetCore.Filters;
-using Microsoft.EntityFrameworkCore; // Necessário para Database.Migrate()
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Persistence (usa chave DefaultConnection conforme extension method)
 builder.Services.AddAppPersistence(builder.Configuration);
 builder.Services.AddApplicationLayer();
 
@@ -25,8 +24,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mottag API", Version = "v1", Description = "API simplificada para gestão de Pátios, Motos e Tags." });
-    // XML docs de todos os assemblies relevantes (API + Application)
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mottag API", Version = "v1", Description = "API para gestão de Pátios, Motos e Tags." });
     var baseDir = AppContext.BaseDirectory;
     foreach (var xml in new[] { "App.Api.xml", "App.Application.xml" })
     {
@@ -42,12 +40,10 @@ var app = builder.Build();
 
 app.UseGlobalExceptionHandler();
 
-// Logs de diagnóstico iniciais
 Console.WriteLine($"[Startup][Diag] Environment={app.Environment.EnvironmentName}");
 Console.WriteLine($"[Startup][Diag] Swagger:AccessKey set={(string.IsNullOrWhiteSpace(app.Configuration.GetValue<string>("Swagger:AccessKey")) ? "no" : "yes")}");
 
 
-// Aplica migrations automaticamente em qualquer ambiente (opcional: restringir via config)
 using (var scope = app.Services.CreateScope())
 {
     try
@@ -59,12 +55,9 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         Console.WriteLine($"[Startup][Migrate][ERRO] {ex.Message}");
-        // Re-lançar se quiser impedir start quando schema falha:
-        // throw;
     }
 }
 
-// Swagger sempre habilitado (produção e desenvolvimento). Proteção opcional via AccessKey.
 var accessKey = app.Configuration.GetValue<string>("Swagger:AccessKey");
 if (!string.IsNullOrWhiteSpace(accessKey))
 {
@@ -85,15 +78,12 @@ if (!string.IsNullOrWhiteSpace(accessKey))
 app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mottag API v1"));
 
-// Redirect da raiz para swagger
 app.MapGet("/", ctx => { ctx.Response.Redirect("/swagger"); return Task.CompletedTask; });
 
-// Health endpoint simples
 app.MapGet("/health", () => Results.Json(new { status = "ok", env = app.Environment.EnvironmentName, timeUtc = DateTime.UtcNow }));
 
 app.MapControllers();
 
-// Fallback explicativo (para evitar 403/404 genérico do front) – só se nenhuma rota casar
 app.MapFallback(async ctx =>
 {
     ctx.Response.StatusCode = StatusCodes.Status404NotFound;

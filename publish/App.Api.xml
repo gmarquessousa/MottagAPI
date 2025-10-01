@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>App.Api</name>
+    </assembly>
+    <members>
+        <member name="T:App.Api.Controllers.MotosController">
+            <summary>Endpoints para gestão de Motos.</summary>
+        </member>
+        <member name="M:App.Api.Controllers.MotosController.List(System.Nullable{System.Guid},System.Nullable{App.Domain.Enums.MotoStatus},System.String,System.String,System.String,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>Lista motos com filtros opcionais.</summary>
+            <remarks>Exemplo: GET /api/v1/motos?page=1&amp;pageSize=10&amp;placa=ABC1234</remarks>
+        </member>
+        <member name="M:App.Api.Controllers.MotosController.Get(System.Guid,System.Threading.CancellationToken)">
+            <summary>Obtém uma moto por Id.</summary>
+        </member>
+        <member name="M:App.Api.Controllers.MotosController.Create(App.Application.DTOs.Motos.CreateMotoDto,System.Threading.CancellationToken)">
+            <summary>Cria uma nova moto.</summary>
+        </member>
+        <member name="M:App.Api.Controllers.MotosController.Update(System.Guid,App.Application.DTOs.Motos.UpdateMotoDto,System.Threading.CancellationToken)">
+            <summary>Atualiza uma moto existente.</summary>
+        </member>
+        <member name="M:App.Api.Controllers.MotosController.Delete(System.Guid,System.Threading.CancellationToken)">
+            <summary>Remove (delete físico) uma moto.</summary>
+        </member>
+        <member name="T:App.Api.Controllers.PatiosController">
+            <summary>Endpoints para gestão de Pátios.</summary>
+        </member>
+        <member name="M:App.Api.Controllers.PatiosController.List(System.String,System.String,System.String,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>Lista pátios com paginação e filtros simples.</summary>
+            <remarks>Exemplo: GET /api/v1/patios?page=1&amp;pageSize=10</remarks>
+        </member>
+        <member name="M:App.Api.Controllers.PatiosController.Get(System.Guid,System.Threading.CancellationToken)">
+            <summary>Obtém um pátio por Id.</summary>
+        </member>
+        <member name="M:App.Api.Controllers.PatiosController.Create(App.Application.DTOs.Patios.CreatePatioDto,System.Threading.CancellationToken)">
+            <summary>Cria um novo pátio.</summary>
+        </member>
+        <member name="M:App.Api.Controllers.PatiosController.Update(System.Guid,App.Application.DTOs.Patios.UpdatePatioDto,System.Threading.CancellationToken)">
+            <summary>Atualiza um pátio existente.</summary>
+        </member>
+        <member name="M:App.Api.Controllers.PatiosController.Delete(System.Guid,System.Threading.CancellationToken)">
+            <summary>Remove (delete físico) um pátio.</summary>
+        </member>
+        <member name="T:App.Api.Controllers.TagsController">
+            <summary>Endpoints para gestão de Tags (identificação de motos).</summary>
+        </member>
+        <member name="M:App.Api.Controllers.TagsController.List(System.String,System.String,System.String,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>Lista tags com filtro opcional por serial.</summary>
+            <remarks>Exemplo: GET /api/v1/tags?page=1&amp;pageSize=10&amp;serial=XYZ</remarks>
+        </member>
+        <member name="M:App.Api.Controllers.TagsController.Get(System.Guid,System.Threading.CancellationToken)">
+            <summary>Obtém uma tag por Id.</summary>
+        </member>
+        <member name="M:App.Api.Controllers.TagsController.Create(App.Application.DTOs.Tags.CreateTagDto,System.Threading.CancellationToken)">
+            <summary>Cria uma nova tag.</summary>
+        </member>
+        <member name="M:App.Api.Controllers.TagsController.Update(System.Guid,App.Application.DTOs.Tags.UpdateTagDto,System.Threading.CancellationToken)">
+            <summary>Atualiza uma tag existente.</summary>
+        </member>
+        <member name="M:App.Api.Controllers.TagsController.Delete(System.Guid,System.Threading.CancellationToken)">
+            <summary>Remove (delete físico) uma tag.</summary>
+        </member>
+    </members>
+</doc>

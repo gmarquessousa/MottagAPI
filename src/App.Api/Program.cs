@@ -42,6 +42,11 @@ var app = builder.Build();
 
 app.UseGlobalExceptionHandler();
 
+// Logs de diagnóstico iniciais
+Console.WriteLine($"[Startup][Diag] Environment={app.Environment.EnvironmentName}");
+Console.WriteLine($"[Startup][Diag] Swagger:AccessKey set={(string.IsNullOrWhiteSpace(app.Configuration.GetValue<string>("Swagger:AccessKey")) ? "no" : "yes")}");
+
+
 // Aplica migrations automaticamente em qualquer ambiente (opcional: restringir via config)
 using (var scope = app.Services.CreateScope())
 {
@@ -59,12 +64,41 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-if (app.Environment.IsDevelopment())
+// Swagger sempre habilitado (produção e desenvolvimento). Proteção opcional via AccessKey.
+var accessKey = app.Configuration.GetValue<string>("Swagger:AccessKey");
+if (!string.IsNullOrWhiteSpace(accessKey))
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mottag API v1"));
+    app.Use(async (ctx, next) =>
+    {
+        if (ctx.Request.Path.StartsWithSegments("/swagger"))
+        {
+            if (!ctx.Request.Headers.TryGetValue("X-Swagger-Key", out var provided) || provided != accessKey)
+            {
+                ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                await ctx.Response.WriteAsync("Swagger unauthorized.");
+                return;
+            }
+        }
+        await next();
+    });
 }
+app.UseSwagger();
+app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mottag API v1"));
+
+// Redirect da raiz para swagger
+app.MapGet("/", ctx => { ctx.Response.Redirect("/swagger"); return Task.CompletedTask; });
+
+// Health endpoint simples
+app.MapGet("/health", () => Results.Json(new { status = "ok", env = app.Environment.EnvironmentName, timeUtc = DateTime.UtcNow }));
 
 app.MapControllers();
+
+// Fallback explicativo (para evitar 403/404 genérico do front) – só se nenhuma rota casar
+app.MapFallback(async ctx =>
+{
+    ctx.Response.StatusCode = StatusCodes.Status404NotFound;
+    ctx.Response.ContentType = "application/json";
+    await ctx.Response.WriteAsync("{\"error\":\"Endpoint não encontrado. Veja /swagger\"}");
+});
 
 app.Run();

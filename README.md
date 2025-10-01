@@ -2,9 +2,6 @@
 <p align="center">API .NET 9 para gestão de Pátios, Motos e Tags com CRUD, paginação, filtros, HATEOAS leve, validação e Swagger sempre habilitado.</p>
 
 ---
-
-## 🔝 Resumo Prioritário
-
 ### Integrantes
 Gabriel Marques de Lima Sousa (RM554889)  
 Leonardo Menezes Parpinelli Ribas (RM557908)  
@@ -202,12 +199,3 @@ dotnet test tests/App.Tests/App.Tests.csproj -v minimal
 | 409 | Duplicidade (placa / serial) | Alterar valor |
 | 412 | Concurrency / rowVersion | Recarregar e reenviar |
 | 500 inicial | Connection string inválida | Ajustar config e restart |
-
-## 14. Roadmap Futuro
-- Remover migração automática em produção
-- Application Insights + logging estruturado (Serilog)
-- Managed Identity para SQL
-- Versionamento adicional de API (v2) / caching
-
----
-Se precisar de uma coleção Postman ou pipeline CI/CD, abra uma issue ou solicite. Boa utilização! 💡

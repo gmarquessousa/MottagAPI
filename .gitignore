@@ -1,0 +1,30 @@
+# Build artifacts
+bin/
+obj/
+
+# User specific
+*.user
+*.vspscc
+.vs/
+
+# Logs
+*.log
+
+# Secrets (user-secrets folder location is outside project by default)
+secrets.json
+
+# IDE
+*.swp
+*.suo
+*.userprefs
+
+# Coverage
+coverage/
+*.coverage
+*.coveragexml
+
+# Python script artifacts
+__pycache__/
+
+# Other
+TestResults/

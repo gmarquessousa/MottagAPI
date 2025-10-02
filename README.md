@@ -227,20 +227,3 @@ Integridade:
 Segurança de conexão:
 - Recomenda-se usar Azure SQL com Encrypt=True e Managed Identity futura (atual: string com credenciais).
 
-## 15. Infraestrutura Azure (Arquivos & Deploy)
-Pasta `infra/` contém:
-- `architecture.mmd`: diagrama Mermaid (App Service, SQL, Key Vault, App Insights, Log Analytics, Managed Identity)
-- `main.bicep`: template base (App Service Plan, App Service c/ identidade, Azure SQL Server + Database, Key Vault, Application Insights)
-- `parameters.dev.json`: parâmetros de exemplo (não usar senha em produção)
-
-Deploy exemplo (após `az login`):
-```powershell
-az group create -n rg-mottag-dev -l eastus
-az deployment group create -g rg-mottag-dev -f infra/main.bicep -p @infra/parameters.dev.json
-```
-Pós-deploy:
-1. Atribuir role ao App Service para acessar o Key Vault (ex: Key Vault Secrets User).
-2. Criar secret de connection string final / string AAD no Key Vault (se preferir, sem senha SQL).
-3. Ajustar `ASPNETCORE_ENVIRONMENT` e outras variáveis conforme necessidade.
-4. Configurar logging adicional (Diagnostic Settings -> Log Analytics) se desejado.
-
